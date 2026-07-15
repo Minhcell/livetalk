@@ -259,14 +259,24 @@ class MainActivity : AppCompatActivity() {
                 emit("error", JSONObject().put("msg", "perm").toString())
                 return
             }
-            if (preferOffline && (error == SpeechRecognizer.ERROR_NETWORK ||
-                    error == SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED)) {
+            // Ngôn ngữ chưa hỗ trợ / thiếu gói → báo rõ, KHÔNG restart liên tục (gây bíp)
+            // 12=ERROR_LANGUAGE_NOT_SUPPORTED, 13=ERROR_LANGUAGE_UNAVAILABLE (API31+)
+            if (error == 12 || error == 13) {
+                if (preferOffline) { preferOffline = false; emit("offlinefail", null) }
+                else { emit("error", JSONObject().put("msg", "lang").put("lang", currentLang).toString()) }
+                recognizer?.destroy(); recognizer = null
+                // thử lại 1 lần sau 600ms (đủ để đổi cờ offline→online), không dồn dập
+                if (wantListen) main.postDelayed({ if (wantListen) beginRecognition() }, 600)
+                return
+            }
+            if (preferOffline && error == SpeechRecognizer.ERROR_NETWORK) {
                 preferOffline = false
                 emit("offlinefail", null)
             }
             recognizer?.destroy()
             recognizer = null
-            if (wantListen) main.postDelayed({ if (wantListen) beginRecognition() }, 120)
+            // ERROR_NO_MATCH / ERROR_SPEECH_TIMEOUT: bình thường, nghe tiếp
+            if (wantListen) main.postDelayed({ if (wantListen) beginRecognition() }, 150)
         }
 
         override fun onResults(results: Bundle?) {
