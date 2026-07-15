@@ -98,7 +98,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (app v15)</b><br>
+    <b>LiveTalk (app v16)</b><br>
     Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
     <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
     Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
@@ -141,7 +141,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const NATIVE=!!(window.Native&&window.Native.startListen);
-$('ver').textContent=NATIVE?'app v15':'web v15';
+$('ver').textContent=NATIVE?'app v16':'web v16';
 
 /* ═══════════ TRẠNG THÁI ═══════════ */
 let running=false;       // đang bật mic tổng
@@ -215,6 +215,7 @@ window.onNative=function(type,data){
   else if(type==='error'){
     if(data.msg==='perm')toast('Chưa cấp quyền micro — vào Cài đặt bật lại');
     else if(data.msg==='no_recognition')toast('Máy chưa có dịch vụ nhận dạng — cài "Google" từ CH Play');
+    else if(data.msg==='lang')toast('Chưa cài gói nhận dạng '+(data.lang||'')+' — Cài đặt → Google → Giọng nói → tải gói tiếng này');
   }
   else if(type==='ttsmissing'){ toast('Thiếu giọng đọc '+(data.lang||'')+' — Cài đặt → Ngôn ngữ → Đầu ra giọng nói'); }
   else if(type==='offlinefail'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Offline chưa có gói tiếng — đã tự chuyển Online'); }
@@ -224,12 +225,15 @@ window.onNative=function(type,data){
 /* ═══════════ GOM CÂU NÓI ═══════════ */
 function gotPartial(text){
   if(speaking||busy)return;
+  text=(text||'').trim();if(!text)return;
   lastPartial=text;
   interimEl.textContent='… '+text;interimEl.style.display='block';scrollBottom();
-  if(!NATIVE){ // web tự chốt câu sau 1.3s im lặng
-    clearTimeout(silenceTimer);
-    silenceTimer=setTimeout(()=>{if(lastPartial){const t=lastPartial;lastPartial='';gotFinal(t);}},1300);
-  }
+  // CẢ native lẫn web: nếu partial đứng yên 1.2s (người ngừng nói) → tự chốt câu.
+  // HyperOS nhiều khi KHÔNG gọi onResults(final) nên phải tự chốt từ partial.
+  clearTimeout(silenceTimer);
+  silenceTimer=setTimeout(()=>{
+    if(lastPartial&&!speaking&&!busy){const t=lastPartial;lastPartial='';gotFinal(t);}
+  },1200);
 }
 function gotFinal(text){
   if(speaking||busy)return;
