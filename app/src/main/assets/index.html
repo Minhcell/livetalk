@@ -164,7 +164,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const HAS_NATIVE = !!(window.Native && window.Native.startListen);
-$('ver').textContent = HAS_NATIVE? 'app v11' : 'web v11';
+$('ver').textContent = HAS_NATIVE? 'app v12' : 'web v12';
 
 let running=false, speaking=false, autoMode=true;
 let micLang='vi';
@@ -212,12 +212,12 @@ let noHearTimer=null;
 function armScan(){
   clearTimeout(noHearTimer);
   if(!autoMode||!running)return;
-  // Nếu 4.5s không nghe được gì → người đang nói bằng tiếng KIA → đổi mic quét
+  // Nếu 3s không nghe được gì → người đang nói bằng tiếng KIA → đổi mic quét
   noHearTimer=setTimeout(()=>{
     if(!running||speaking||pending||lastInterim)return;
     const other=(micLang===selA.value)?selB.value:selA.value;
     if(other!==micLang){micLang=other;refreshChips();reStart();}
-  },4500);
+  },3000);
 }
 window.onNative=function(type,data){
   if(type==='partial'){ heardSinceStart=true;clearTimeout(noHearTimer);clearTimeout(scanTimer); onPartial(data.text); }
@@ -230,6 +230,7 @@ window.onNative=function(type,data){
     else if(data.msg==='no_recognition') toast('Máy chưa có dịch vụ nhận dạng (cài Google app)');
   }
   else if(type==='ttsmissing'){ toast('Thiếu gói giọng đọc '+data.lang+' — vào Cài đặt TTS tải thêm'); }
+  else if(type==='offlinefail'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Offline chưa có gói tiếng — đã tự chuyển về Online'); }
   else if(type==='perm'){ if(data.granted&&running) recStart(byCode(micLang).b); }
 };
 
@@ -287,24 +288,27 @@ async function handleUtterance(text){
   const a=selA.value,b=selB.value;
   try{
     if(autoMode){
-      // Nhận diện tiếng vừa nói: dịch về A, Google báo tiếng nguồn
+      // Dịch tạm về A để Google TỰ phát hiện tiếng nguồn (sl=auto)
       const probe=await gTranslate(text, a);
-      let srcCode=byCode(probe.detected)?byCode(probe.detected).c:micLang;
-      if(srcCode!==a){
-        // Tiếng nước ngoài → dịch về A + đọc loa A (đã có sẵn probe.text)
-        if(!foreignLangs.includes(srcCode))foreignLangs.push(srcCode);
-        addBubble('B',text,probe.text,srcCode,a);
+      const det=(probe.detected||'').toLowerCase();
+      const detShort=det.split('-')[0];
+      const aShort=a.split('-')[0];
+      // So khớp tiếng phát hiện với A
+      const isHome = detShort===aShort || (byCode(det)&&byCode(det).c===a);
+      if(!isHome && det){
+        // Người nói tiếng KHÁC A → dịch ra A (đã có probe.text), đọc loa A
+        const srcCode=(byCode(det)?byCode(det).c:det);
+        if(byCode(srcCode)&&!foreignLangs.includes(srcCode))foreignLangs.push(srcCode);
+        addBubble('B',text,probe.text,byCode(srcCode)?srcCode:b,a);
         speakOut(probe.text,a);
-        if(micLang!==srcCode){micLang=srcCode;refreshChips();}
       }else{
-        // Tiếng A (của bạn) → dịch ra (các) tiếng đã phát hiện, chưa có thì dùng B
+        // Người nói tiếng A → dịch ra (các) tiếng đã phát hiện, chưa có thì dùng B
         const targets=foreignLangs.length?foreignLangs:[b];
         const rs=await Promise.all(targets.map(t=>gTranslate(text,t)));
         const parts=targets.map((t,i)=>({lang:t,txt:rs[i].text}));
         const transText=parts.length===1?parts[0].txt:parts.map(p=>byCode(p.lang).n+': '+p.txt).join('\n');
         addBubble('A',text,transText,a,targets[0]);
         speakList(parts);
-        if(micLang!==a){micLang=a;refreshChips();}
       }
     }else{
       const src=micLang,tl=(micLang===a)?b:a;
@@ -340,6 +344,8 @@ function speakList(parts){
 function onTtsEnd(){
   if(ttsQueue.length){const p=ttsQueue.shift();ttsSpeak(p.txt,byCode(p.lang).b);return;}
   speaking=false;
+  // TỰ ĐỘNG: sau khi đọc xong, luân phiên đổi tiếng mic để phiên kế bắt được người nói tiếng KIA
+  if(autoMode&&running){ micLang=(micLang===selA.value)?selB.value:selA.value; refreshChips(); }
   resumeListen();
   if(pending||lastInterim)setTimeout(flushPending,150);
 }
