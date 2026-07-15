@@ -187,6 +187,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ─────────── Tắt tiếng bíp ───────────
+    private var savedMusicVol = -1
     private fun muteBeep(mute: Boolean) {
         try {
             val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -205,6 +206,25 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) {}
     }
 
+    // Chặn bíp Xiaomi (phát qua kênh MUSIC lúc mic bật): hạ MUSIC về 0 trong ~450ms rồi khôi phục.
+    // Loa đọc xảy ra SAU bước này nên vẫn kêu bình thường.
+    private fun suppressMusicBeepBriefly() {
+        try {
+            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            if (savedMusicVol < 0) savedMusicVol = am.getStreamVolume(AudioManager.STREAM_MUSIC)
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
+            main.postDelayed({
+                try {
+                    if (savedMusicVol >= 0) {
+                        am.setStreamVolume(AudioManager.STREAM_MUSIC, savedMusicVol, 0)
+                        savedMusicVol = -1
+                    }
+                } catch (_: Exception) {}
+            }, 450)
+        } catch (_: Exception) {}
+    }
+
+
     // ─────────── Nhận dạng giọng nói ───────────
     private fun beginRecognition() {
         stopRecognition()
@@ -213,6 +233,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         muteBeep(true)
+        suppressMusicBeepBriefly()
         recognizer = SpeechRecognizer.createSpeechRecognizer(this)
         recognizer?.setRecognitionListener(listener)
 
@@ -245,7 +266,7 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
             emit("listening", null)
-            main.postDelayed({ muteBeep(false) }, 300)
+            // KHÔNG mở mute ở đây — giữ tắt bíp suốt lúc nghe. Chỉ mở khi đọc loa (speakNative).
         }
         override fun onBeginningOfSpeech() {}
         override fun onRmsChanged(rms: Float) {
@@ -303,6 +324,14 @@ class MainActivity : AppCompatActivity() {
     private fun speakNative(text: String, lang: String) {
         if (!ttsReady || text.isBlank()) { emit("ttsend", null); return }
         muteBeep(false)
+        // Khôi phục ngay âm lượng MUSIC (phòng khi đang trong 450ms hạ tạm) để loa đọc rõ
+        try {
+            if (savedMusicVol >= 0) {
+                val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, savedMusicVol, 0)
+                savedMusicVol = -1
+            }
+        } catch (_: Exception) {}
         stopRecognition()
         val res = tts?.setLanguage(localeOf(lang))
         if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
