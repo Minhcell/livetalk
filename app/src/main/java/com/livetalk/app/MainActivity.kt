@@ -3,6 +3,7 @@ package com.livetalk.app
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -62,10 +63,18 @@ class MainActivity : AppCompatActivity() {
         // Nạp trang giao diện đóng gói sẵn trong assets
         web.loadUrl("file:///android_asset/index.html")
 
-        // Khởi tạo TTS native (đọc loa, không tiếng bíp)
+        // Khởi tạo TTS native (đọc loa ngoài + tai nghe Bluetooth)
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 ttsReady = true
+                // Định tuyến âm thanh qua kênh media → ra loa ngoài VÀ tai nghe Bluetooth
+                try {
+                    val attrs = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                    tts?.setAudioAttributes(attrs)
+                } catch (_: Exception) {}
                 tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(id: String?) {}
                     override fun onDone(id: String?) { main.post { emit("ttsend", null) } }
@@ -247,6 +256,13 @@ class MainActivity : AppCompatActivity() {
             if (fatal) {
                 emit("error", JSONObject().put("msg", "perm").toString())
                 return
+            }
+            // Offline mà lỗi mạng/ngôn ngữ chưa hỗ trợ → tự chuyển về online
+            if (preferOffline && (error == SpeechRecognizer.ERROR_NETWORK ||
+                    error == SpeechRecognizer.ERROR_LANGUAGE_NOT_SUPPORTED ||
+                    error == 12 /* LANGUAGE_UNAVAILABLE */)) {
+                preferOffline = false
+                emit("offlinefail", null)
             }
             listening = false
             recognizer?.destroy()
