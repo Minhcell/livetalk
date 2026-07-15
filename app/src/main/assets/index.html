@@ -5,17 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>LiveTalk</title>
 <style>
-:root{
-  --bg:#0c1220; --panel:#141c2e; --panel2:#1b2740; --line:#26334f;
-  --ink:#e8eef8; --dim:#8ea0bd;
-  --a:#39d3c0; --a-soft:rgba(57,211,192,.14);
-  --b:#ffb648; --b-soft:rgba(255,182,72,.14);
-  --danger:#ff6b7a;
-}
+:root{--bg:#0c1220;--panel:#141c2e;--panel2:#1b2740;--line:#26334f;--ink:#e8eef8;--dim:#8ea0bd;
+--a:#39d3c0;--a-soft:rgba(57,211,192,.14);--b:#ffb648;--b-soft:rgba(255,182,72,.14);--danger:#ff6b7a;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{font-family:"Roboto",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-  display:flex;flex-direction:column;overflow:hidden}
+body{font-family:"Roboto",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;overflow:hidden}
 header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 .logo{font-weight:800;font-size:17px}.logo span{color:var(--a)}
 .ver{font-size:10px;color:var(--dim);font-weight:600}
@@ -23,28 +17,20 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 #dot{width:8px;height:8px;border-radius:50%;background:#42506b;transition:.2s}
 #dot.on{background:var(--a);box-shadow:0 0 8px var(--a)}
 #dot.tts{background:var(--b);box-shadow:0 0 8px var(--b)}
-
 .langbar{display:flex;align-items:center;gap:6px;padding:4px 12px 6px}
-.langchip{flex:1;display:flex;align-items:center;gap:6px;justify-content:center;background:var(--panel);
-  border:1.5px solid var(--line);border-radius:12px;padding:8px 6px;min-width:0}
+.langchip{flex:1;display:flex;align-items:center;gap:6px;justify-content:center;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:8px 6px;min-width:0}
 .langchip.mic{border-color:currentColor}
 .cdot{width:7px;height:7px;border-radius:50%;flex:none}
 #chipA{color:var(--a)}#chipB{color:var(--b)}
 #chipA .cdot{background:var(--a)}#chipB .cdot{background:var(--b)}
-.langchip select{appearance:none;-webkit-appearance:none;background:transparent;border:0;color:var(--ink);
-  font:inherit;font-size:13px;font-weight:600;text-align:center;max-width:100%;outline:none}
-#swap{flex:none;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);
-  background:var(--panel);color:var(--dim);font-size:15px}
-
+.langchip select{appearance:none;-webkit-appearance:none;background:transparent;border:0;color:var(--ink);font:inherit;font-size:13px;font-weight:600;text-align:center;max-width:100%;outline:none}
+#swap{flex:none;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--panel);color:var(--dim);font-size:15px}
 .modebar{display:flex;gap:6px;padding:0 12px 6px}
-.mode{flex:1;font-size:12.5px;font-weight:700;border-radius:10px;padding:8px 6px;
-  border:1.5px solid var(--line);background:var(--panel);color:var(--dim)}
+.mode{flex:1;font-size:12.5px;font-weight:700;border-radius:10px;padding:8px 6px;border:1.5px solid var(--line);background:var(--panel);color:var(--dim)}
 .mode.on{color:#0c1220;background:linear-gradient(90deg,var(--a),#7fe0d2);border-color:transparent}
 #modeManual.on{background:linear-gradient(90deg,#ffd08a,var(--b))}
-
 .settings{padding:0 12px 6px;display:flex;flex-direction:column;gap:6px}
-.setrow{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);
-  border-radius:10px;padding:7px 10px}
+.setrow{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
 .setrow label{font-size:11.5px;color:var(--dim);white-space:nowrap}
 .setrow input[type=range]{flex:1;accent-color:var(--a)}
 .setrow .val{font-size:11.5px;color:var(--a);font-weight:700;min-width:30px;text-align:right}
@@ -53,7 +39,6 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 .toggle button.on{background:var(--a);color:#0c1220}
 #micbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:2px}
 #micfill{height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b));transition:width .08s}
-
 #chat{flex:1;overflow-y:auto;padding:6px 12px 10px;display:flex;flex-direction:column;gap:8px}
 .msg{max-width:86%;padding:8px 11px;border-radius:14px;line-height:1.45;word-break:break-word}
 .msg .src{font-size:12px;color:var(--dim);margin-bottom:3px}
@@ -66,26 +51,19 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 #interim{align-self:center;font-size:13px;color:var(--dim);font-style:italic;padding:2px 8px;display:none}
 #empty{margin:auto;text-align:center;color:var(--dim);font-size:12.5px;line-height:1.7;padding:0 24px}
 #empty b{color:var(--ink)}
-
 #talkbar{display:none;gap:8px;padding:8px 12px;background:var(--panel);border-top:1px solid var(--line)}
-.talk{flex:1;padding:14px 8px;border-radius:14px;font:inherit;font-size:15px;font-weight:700;
-  border:2px solid var(--line);background:var(--panel2);color:var(--dim)}
-#talkA.on{border-color:var(--a);color:var(--a);background:var(--a-soft)}
-#talkB.on{border-color:var(--b);color:var(--b);background:var(--b-soft)}
-
-.controls{display:flex;align-items:center;justify-content:space-around;padding:10px 18px 16px;
-  border-top:1px solid var(--line);background:var(--panel)}
-.side{width:52px;height:52px;border-radius:16px;border:1.5px solid var(--line);
-  background:var(--panel2);color:var(--dim);font-size:20px}
+.talk{flex:1;padding:15px 8px;border-radius:14px;font:inherit;font-size:15px;font-weight:700;border:2px solid var(--line);background:var(--panel2);color:var(--dim)}
+#talkA.on{border-color:var(--a);color:var(--a);background:var(--a-soft);box-shadow:0 0 14px rgba(57,211,192,.35)}
+#talkB.on{border-color:var(--b);color:var(--b);background:var(--b-soft);box-shadow:0 0 14px rgba(255,182,72,.35)}
+.talk:active{transform:scale(.97)}
+.controls{display:flex;align-items:center;justify-content:space-around;padding:10px 18px 16px;border-top:1px solid var(--line);background:var(--panel)}
+.side{width:52px;height:52px;border-radius:16px;border:1.5px solid var(--line);background:var(--panel2);color:var(--dim);font-size:20px}
 .side:active{transform:scale(.94)}
-#micBtn{width:72px;height:72px;border-radius:50%;border:0;font-size:28px;color:#07131f;
-  background:linear-gradient(135deg,var(--a),#22b9a6);box-shadow:0 6px 22px rgba(57,211,192,.4)}
+#micBtn{width:72px;height:72px;border-radius:50%;border:0;font-size:28px;color:#07131f;background:linear-gradient(135deg,var(--a),#22b9a6);box-shadow:0 6px 22px rgba(57,211,192,.4)}
 #micBtn.stop{background:linear-gradient(135deg,#ff8a96,var(--danger));color:#fff}
 .lbl{font-size:10px;color:var(--dim);text-align:center;margin-top:3px}
 .ctrlwrap{display:flex;flex-direction:column;align-items:center}
-#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--panel2);
-  border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:20px;font-size:13px;
-  display:none;z-index:10;max-width:90%;text-align:center}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:8px 16px;border-radius:20px;font-size:13px;display:none;z-index:10;max-width:90%;text-align:center}
 </style>
 </head>
 <body>
@@ -101,8 +79,8 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 </div>
 
 <div class="modebar">
-  <button id="modeAuto" class="mode on">🌐 Tự động dịch</button>
-  <button id="modeManual" class="mode">👆 Chọn thủ công</button>
+  <button id="modeAuto" class="mode on">🌐 Tự động</button>
+  <button id="modeManual" class="mode">👆 Thủ công</button>
 </div>
 
 <div class="settings">
@@ -114,19 +92,17 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
   <div id="micbar"><div id="micfill"></div></div>
   <div class="setrow">
     <label>Nhận dạng</label>
-    <div class="toggle">
-      <button id="onl" class="on">Online</button>
-      <button id="ofl">Offline</button>
-    </div>
+    <div class="toggle"><button id="onl" class="on">Online</button><button id="ofl">Offline</button></div>
   </div>
 </div>
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (bản app)</b><br>
-    Dùng nhận dạng &amp; đọc loa của Android — không tiếng bíp.<br>
-    <b>Độ nhạy mic</b> cao → bắt tiếng nhỏ, chốt câu nhanh.<br>
-    <b>Offline</b> chạy không cần mạng (cần tải gói tiếng trong máy).
+    <b>LiveTalk (app v13)</b><br>
+    Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
+    <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
+    Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
+    Cách này chạy chuẩn 2 chiều, không lẫn tiếng.
   </div>
   <div id="interim"></div>
 </div>
@@ -144,136 +120,123 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 <div id="toast"></div>
 
 <script>
-const LANGS = [
-  {c:'vi', b:'vi-VN', n:'🇻🇳 Tiếng Việt'},
-  {c:'en', b:'en-US', n:'🇺🇸 English'},
-  {c:'zh-CN', b:'zh-CN', n:'🇨🇳 中文'},
-  {c:'ja', b:'ja-JP', n:'🇯🇵 日本語'},
-  {c:'ko', b:'ko-KR', n:'🇰🇷 한국어'},
-  {c:'th', b:'th-TH', n:'🇹🇭 ไทย'},
-  {c:'fr', b:'fr-FR', n:'🇫🇷 Français'},
-  {c:'de', b:'de-DE', n:'🇩🇪 Deutsch'},
-  {c:'ru', b:'ru-RU', n:'🇷🇺 Русский'},
-  {c:'es', b:'es-ES', n:'🇪🇸 Español'},
-  {c:'km', b:'km-KH', n:'🇰🇭 ខ្មែរ'},
+/* ═══════════ NGÔN NGỮ ═══════════ */
+const LANGS=[
+  {c:'vi',b:'vi-VN',n:'🇻🇳 Tiếng Việt'},
+  {c:'en',b:'en-US',n:'🇺🇸 English'},
+  {c:'zh',b:'zh-CN',n:'🇨🇳 中文'},
+  {c:'ja',b:'ja-JP',n:'🇯🇵 日本語'},
+  {c:'ko',b:'ko-KR',n:'🇰🇷 한국어'},
+  {c:'th',b:'th-TH',n:'🇹🇭 ไทย'},
+  {c:'fr',b:'fr-FR',n:'🇫🇷 Français'},
+  {c:'de',b:'de-DE',n:'🇩🇪 Deutsch'},
+  {c:'ru',b:'ru-RU',n:'🇷🇺 Русский'},
+  {c:'es',b:'es-ES',n:'🇪🇸 Español'},
+  {c:'km',b:'km-KH',n:'🇰🇭 ខ្មែរ'},
 ];
-const byCode=c=>LANGS.find(l=>l.c===c)||LANGS.find(l=>c&&c.startsWith(l.c.split('-')[0]));
+const byCode=c=>LANGS.find(l=>l.c===c)||LANGS.find(l=>c&&c.startsWith(l.c))||LANGS[0];
 const $=id=>document.getElementById(id);
 const selA=$('selA'),selB=$('selB'),chat=$('chat'),interimEl=$('interim');
 LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));});
 selA.value='vi';selB.value='en';
 
-const HAS_NATIVE = !!(window.Native && window.Native.startListen);
-$('ver').textContent = HAS_NATIVE? 'app v12' : 'web v12';
+const NATIVE=!!(window.Native&&window.Native.startListen);
+$('ver').textContent=NATIVE?'app v13':'web v13';
 
-let running=false, speaking=false, autoMode=true;
-let micLang='vi';
-let pending='', lastInterim='', silenceTimer=null, interimTimer=null;
-let foreignLangs=[], lastFlushText='', lastFlushAt=0;
-let heardSinceStart=false, scanTimer=null;
+/* ═══════════ TRẠNG THÁI ═══════════ */
+let running=false;       // đang bật mic tổng
+let speaking=false;      // đang đọc loa
+let autoMode=true;
+let micLang='vi';        // tiếng mic ĐANG nghe (mã ngắn)
+let busy=false;          // đang dịch 1 câu (chặn chồng chéo)
+let pending='',lastPartial='';
+let silenceTimer=null;   // dùng cho web fallback
+let lastText='',lastAt=0;
 const log=[];
 
 const norm=s=>(s||'').toLowerCase().replace(/[^\p{L}\p{N} ]/gu,' ').replace(/\s+/g,' ').trim();
 function setStatus(t,m){$('stTxt').textContent=t;$('dot').className=m||'';}
-function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2600);}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2800);}
 function refreshChips(){$('chipA').classList.toggle('mic',micLang===selA.value);$('chipB').classList.toggle('mic',micLang===selB.value);}
+function scrollBottom(){chat.scrollTop=chat.scrollHeight;}
 refreshChips();
 
-/* ── Lớp nhận dạng: Native hoặc Web ── */
-const WebSR = window.SpeechRecognition || window.webkitSpeechRecognition;
+/* ═══════════ NHẬN DẠNG: Native hoặc Web ═══════════ */
+const WebSR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let webRecog=null;
-function recStart(langBcp){
-  if(HAS_NATIVE){ window.Native.startListen(langBcp); return; }
-  if(!WebSR){toast('Trình duyệt không hỗ trợ nhận dạng');return;}
-  try{webRecog&&webRecog.abort();}catch(e){}
-  webRecog=new WebSR();
-  webRecog.lang=langBcp; webRecog.continuous=true; webRecog.interimResults=true;
-  webRecog.onresult=ev=>{
-    heardSinceStart=true;clearTimeout(scanTimer);
-    let itr='',fin='';
-    for(let i=ev.resultIndex;i<ev.results.length;i++){const r=ev.results[i];if(r.isFinal)fin+=r[0].transcript;else itr+=r[0].transcript;}
-    if(fin.trim())onFinal(fin.trim()); else if(itr)onPartial(itr.trim());
-  };
-  webRecog.onend=()=>{if(running&&!speaking)setTimeout(()=>recStart(byCode(micLang).b),150);};
-  try{webRecog.start();}catch(e){}
+
+function listenStart(){
+  if(!running||speaking||busy)return;
+  const bcp=byCode(micLang).b;
+  if(NATIVE){ window.Native.startListen(bcp); }
+  else{
+    if(!WebSR){toast('Trình duyệt không hỗ trợ nhận dạng');return;}
+    try{webRecog&&webRecog.abort();}catch(e){}
+    webRecog=new WebSR();
+    webRecog.lang=bcp;webRecog.continuous=true;webRecog.interimResults=true;
+    webRecog.onresult=ev=>{
+      let it='',fn='';
+      for(let i=ev.resultIndex;i<ev.results.length;i++){const r=ev.results[i];if(r.isFinal)fn+=r[0].transcript;else it+=r[0].transcript;}
+      if(fn.trim())gotFinal(fn.trim());else if(it)gotPartial(it.trim());
+    };
+    webRecog.onend=()=>{if(running&&!speaking&&!busy)setTimeout(listenStart,150);};
+    try{webRecog.start();}catch(e){}
+  }
+  if(!speaking)setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,''),'on');
 }
-function recStop(){ if(HAS_NATIVE){window.Native.stopListen();} else {try{webRecog&&webRecog.abort();}catch(e){}webRecog=null;} }
-function ttsSpeak(text,langBcp){
-  if(HAS_NATIVE){ window.Native.speak(text,langBcp); return; }
-  if(!('speechSynthesis'in window)){onTtsEnd();return;}
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);u.lang=langBcp;
-  u.onend=u.onerror=()=>onTtsEnd();
-  speechSynthesis.speak(u);
+function listenStop(){
+  if(NATIVE){window.Native.stopListen();}
+  else{try{webRecog&&webRecog.abort();}catch(e){}webRecog=null;}
+}
+function ttsPlay(text,langC){
+  const bcp=byCode(langC).b;
+  if(NATIVE){window.Native.speak(text,bcp);}
+  else{
+    if(!('speechSynthesis'in window)){ttsEnded();return;}
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang=bcp;
+    u.onend=u.onerror=()=>ttsEnded();
+    speechSynthesis.speak(u);
+  }
 }
 
-/* ── Sự kiện từ Native ── */
-let noHearTimer=null;
-function armScan(){
-  clearTimeout(noHearTimer);
-  if(!autoMode||!running)return;
-  // Nếu 3s không nghe được gì → người đang nói bằng tiếng KIA → đổi mic quét
-  noHearTimer=setTimeout(()=>{
-    if(!running||speaking||pending||lastInterim)return;
-    const other=(micLang===selA.value)?selB.value:selA.value;
-    if(other!==micLang){micLang=other;refreshChips();reStart();}
-  },3000);
-}
+/* ═══════════ SỰ KIỆN TỪ NATIVE ═══════════ */
 window.onNative=function(type,data){
-  if(type==='partial'){ heardSinceStart=true;clearTimeout(noHearTimer);clearTimeout(scanTimer); onPartial(data.text); }
-  else if(type==='final'){ heardSinceStart=true;clearTimeout(noHearTimer);clearTimeout(scanTimer); onFinal(data.text); }
-  else if(type==='ttsend'){ onTtsEnd(); }
-  else if(type==='rms'){ const v=Math.max(0,Math.min(100,(data.v/10)*100)); $('micfill').style.width=v+'%'; }
-  else if(type==='listening'){ if(!speaking){setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,'')+' …','on');armScan();} }
+  if(type==='partial'){ gotPartial(data.text); }
+  else if(type==='final'){ gotFinal(data.text); }
+  else if(type==='ttsend'){ ttsEnded(); }
+  else if(type==='rms'){ $('micfill').style.width=Math.max(0,Math.min(100,(data.v/10)*100))+'%'; }
+  else if(type==='listening'){ if(!speaking&&!busy)setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,''),'on'); }
   else if(type==='error'){
-    if(data.msg==='perm') toast('Chưa cấp quyền micro — vào Cài đặt bật lại');
-    else if(data.msg==='no_recognition') toast('Máy chưa có dịch vụ nhận dạng (cài Google app)');
+    if(data.msg==='perm')toast('Chưa cấp quyền micro — vào Cài đặt bật lại');
+    else if(data.msg==='no_recognition')toast('Máy chưa có dịch vụ nhận dạng — cài "Google" từ CH Play');
   }
-  else if(type==='ttsmissing'){ toast('Thiếu gói giọng đọc '+data.lang+' — vào Cài đặt TTS tải thêm'); }
-  else if(type==='offlinefail'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Offline chưa có gói tiếng — đã tự chuyển về Online'); }
-  else if(type==='perm'){ if(data.granted&&running) recStart(byCode(micLang).b); }
+  else if(type==='ttsmissing'){ toast('Thiếu giọng đọc '+data.lang+' — Cài đặt → Ngôn ngữ → Đầu ra giọng nói'); }
+  else if(type==='offlinefail'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Offline chưa có gói tiếng — đã tự chuyển Online'); }
+  else if(type==='perm'){ if(data.granted&&running)listenStart(); }
 };
 
-/* ── Nhận câu nói ── */
-function onPartial(text){
-  if(speaking)return;
-  lastInterim=text;
-  interimEl.textContent='… '+((pending?pending+' ':'')+text);
-  interimEl.style.display='block';scrollBottom();
-  if(!HAS_NATIVE){
+/* ═══════════ GOM CÂU NÓI ═══════════ */
+function gotPartial(text){
+  if(speaking||busy)return;
+  lastPartial=text;
+  interimEl.textContent='… '+text;interimEl.style.display='block';scrollBottom();
+  if(!NATIVE){ // web tự chốt câu sau 1.3s im lặng
     clearTimeout(silenceTimer);
-    silenceTimer=setTimeout(()=>{ if(lastInterim){appendPending(lastInterim);lastInterim='';flushPending();} },1400);
+    silenceTimer=setTimeout(()=>{if(lastPartial){const t=lastPartial;lastPartial='';gotFinal(t);}},1300);
   }
 }
-function onFinal(text){
-  if(speaking)return;
-  if(norm(text)===norm(lastFlushText)&&Date.now()-lastFlushAt<4000)return;
-  appendPending(text); lastInterim='';
-  flushPending();
-}
-function appendPending(t){
-  t=(t||'').trim();if(!t)return;
-  const n=norm(t),p=norm(pending);
-  if(!n)return;
-  if(!p){pending=t;return;}
-  if(p===n||p.endsWith(' '+n)||(' '+p+' ').includes(' '+n+' '))return;
-  if(n===p||n.startsWith(p+' ')||n.startsWith(p)){pending=t;return;}
-  const pw=p.split(' '),nw=n.split(' '),tw=t.split(/\s+/);
-  let k=Math.min(pw.length,nw.length);
-  for(;k>0;k--){if(pw.slice(-k).join(' ')===nw.slice(0,k).join(' '))break;}
-  const rest=tw.slice(k).join(' ');if(rest)pending+=' '+rest;
-}
-function flushPending(){
-  clearTimeout(silenceTimer);clearTimeout(interimTimer);
-  if(lastInterim){appendPending(lastInterim);lastInterim='';}
-  if(!pending||speaking)return;
-  const text=pending;pending='';
-  lastFlushText=text;lastFlushAt=Date.now();
+function gotFinal(text){
+  if(speaking||busy)return;
+  text=(text||'').trim();if(!text)return;
+  if(norm(text)===norm(lastText)&&Date.now()-lastAt<4000){lastPartial='';return;} // chống lặp
+  lastPartial='';clearTimeout(silenceTimer);
+  lastText=text;lastAt=Date.now();
   interimEl.style.display='none';
-  handleUtterance(text);
+  translateAndSpeak(text);
 }
 
-/* ── Dịch ── */
+/* ═══════════ DỊCH ═══════════ */
 async function gTranslate(q,tl){
   const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='
     +encodeURIComponent(tl)+'&dt=t&q='+encodeURIComponent(q);
@@ -282,45 +245,27 @@ async function gTranslate(q,tl){
     return{text:j[0].map(s=>s[0]).join(''),detected:(j[2]||'').split('-')[0].toLowerCase()};}
   finally{clearTimeout(to);}
 }
-async function handleUtterance(text){
-  if(log.length){const last=log[log.length-1];
-    if(norm(last.text)===norm(text)&&Date.now()-(last._at||0)<7000){resumeListen();return;}}
+
+async function translateAndSpeak(text){
+  busy=true;listenStop();
   const a=selA.value,b=selB.value;
+  // Nguồn = tiếng mic ĐANG nghe (người dùng đã chọn qua nút talk hoặc auto luân phiên).
+  // Đích = tiếng còn lại.
+  const src=micLang, tl=(micLang===a)?b:a;
   try{
-    if(autoMode){
-      // Dịch tạm về A để Google TỰ phát hiện tiếng nguồn (sl=auto)
-      const probe=await gTranslate(text, a);
-      const det=(probe.detected||'').toLowerCase();
-      const detShort=det.split('-')[0];
-      const aShort=a.split('-')[0];
-      // So khớp tiếng phát hiện với A
-      const isHome = detShort===aShort || (byCode(det)&&byCode(det).c===a);
-      if(!isHome && det){
-        // Người nói tiếng KHÁC A → dịch ra A (đã có probe.text), đọc loa A
-        const srcCode=(byCode(det)?byCode(det).c:det);
-        if(byCode(srcCode)&&!foreignLangs.includes(srcCode))foreignLangs.push(srcCode);
-        addBubble('B',text,probe.text,byCode(srcCode)?srcCode:b,a);
-        speakOut(probe.text,a);
-      }else{
-        // Người nói tiếng A → dịch ra (các) tiếng đã phát hiện, chưa có thì dùng B
-        const targets=foreignLangs.length?foreignLangs:[b];
-        const rs=await Promise.all(targets.map(t=>gTranslate(text,t)));
-        const parts=targets.map((t,i)=>({lang:t,txt:rs[i].text}));
-        const transText=parts.length===1?parts[0].txt:parts.map(p=>byCode(p.lang).n+': '+p.txt).join('\n');
-        addBubble('A',text,transText,a,targets[0]);
-        speakList(parts);
-      }
-    }else{
-      const src=micLang,tl=(micLang===a)?b:a;
-      const r=await gTranslate(text,tl);
-      addBubble(src===a?'A':'B',text,r.text,src,tl);
-      speakOut(r.text,tl);
-    }
-  }catch(e){toast('Lỗi mạng khi dịch');resumeListen();}
+    const r=await gTranslate(text,tl);
+    addBubble(src===a?'A':'B',text,r.text,src,tl);
+    speak(r.text,tl);
+  }catch(e){
+    toast('Lỗi mạng khi dịch');
+    busy=false;
+    if(autoMode&&running)micLang=(micLang===a)?b:a;  // auto: đổi lượt
+    refreshChips();updateTalk();
+    if(running&&!speaking)listenStart();
+  }
 }
 
-/* ── Phụ đề ── */
-function scrollBottom(){chat.scrollTop=chat.scrollHeight;}
+/* ═══════════ PHỤ ĐỀ ═══════════ */
 function addBubble(side,text,trans,srcC,dstC){
   const emp=$('empty');if(emp)emp.remove();
   const hhmm=new Date().toTimeString().slice(0,5);
@@ -329,78 +274,78 @@ function addBubble(side,text,trans,srcC,dstC){
   d.children[0].textContent=text;d.children[1].textContent=trans;
   d.children[2].textContent=byCode(srcC).n+' → '+byCode(dstC).n+' · '+hhmm;
   chat.insertBefore(d,interimEl);scrollBottom();
-  log.push({t:hhmm,side,srcName:byCode(srcC).n,dstName:byCode(dstC).n,text,trans,_at:Date.now()});
+  log.push({t:hhmm,side,srcName:byCode(srcC).n,text,trans});
 }
 
-/* ── Đọc loa ── */
-let ttsQueue=[];
-function speakOut(text,langC){ speaking=true;setStatus('Đang đọc bản dịch…','tts');recStop();ttsQueue=[];ttsSpeak(text,byCode(langC).b); }
-function speakList(parts){
-  speaking=true;setStatus('Đang đọc bản dịch…','tts');recStop();
-  ttsQueue=parts.slice();
-  const p=ttsQueue.shift();
-  if(p)ttsSpeak(p.txt,byCode(p.lang).b); else onTtsEnd();
+/* ═══════════ ĐỌC LOA ═══════════ */
+function speak(text,langC){
+  speaking=true;setStatus('Đang đọc bản dịch…','tts');listenStop();
+  ttsPlay(text,langC);
 }
-function onTtsEnd(){
-  if(ttsQueue.length){const p=ttsQueue.shift();ttsSpeak(p.txt,byCode(p.lang).b);return;}
-  speaking=false;
-  // TỰ ĐỘNG: sau khi đọc xong, luân phiên đổi tiếng mic để phiên kế bắt được người nói tiếng KIA
-  if(autoMode&&running){ micLang=(micLang===selA.value)?selB.value:selA.value; refreshChips(); }
-  resumeListen();
-  if(pending||lastInterim)setTimeout(flushPending,150);
+function ttsEnded(){
+  speaking=false;busy=false;
+  // Tự động: sau khi đọc xong, đổi lượt sang tiếng KIA để bắt người kia đáp
+  if(autoMode&&running){micLang=(micLang===selA.value)?selB.value:selA.value;refreshChips();updateTalk();}
+  if(running)listenStart();else setStatus('Sẵn sàng','');
 }
-function resumeListen(){ if(running&&!speaking) recStart(byCode(micLang).b); else if(!running) setStatus('Sẵn sàng',''); }
 
-/* ── Điều khiển ── */
+/* ═══════════ ĐIỀU KHIỂN ═══════════ */
 $('micBtn').onclick=()=>{
   if(!running){
-    running=true;foreignLangs=[];
+    running=true;busy=false;speaking=false;
     $('micBtn').classList.add('stop');$('micBtn').textContent='■';$('micLbl').textContent='Dừng';
-    recStart(byCode(micLang).b);updateTalkbar();
+    listenStart();updateTalk();
   }else stopAll();
 };
 function stopAll(){
-  running=false;speaking=false;pending='';lastInterim='';
-  clearTimeout(silenceTimer);clearTimeout(interimTimer);clearTimeout(scanTimer);clearTimeout(noHearTimer);
-  recStop();if(HAS_NATIVE)window.Native.stopSpeak();else if('speechSynthesis'in window)speechSynthesis.cancel();
+  running=false;speaking=false;busy=false;pending='';lastPartial='';
+  clearTimeout(silenceTimer);
+  listenStop();if(NATIVE)window.Native.stopSpeak();else if('speechSynthesis'in window)speechSynthesis.cancel();
   interimEl.style.display='none';$('micfill').style.width='0';
   $('micBtn').classList.remove('stop');$('micBtn').textContent='🎙';$('micLbl').textContent='Bắt đầu';
-  setStatus('Đã dừng','');updateTalkbar();
+  setStatus('Đã dừng','');updateTalk();
 }
-$('clearBtn').onclick=()=>{document.querySelectorAll('.msg').forEach(m=>m.remove());pending='';lastInterim='';log.length=0;interimEl.style.display='none';toast('Đã xóa');};
-$('swap').onclick=()=>{const a=selA.value;selA.value=selB.value;selB.value=a;micLang=selA.value;refreshChips();updateTalkbar();if(running&&!speaking)reStart();};
-selA.onchange=selB.onchange=()=>{micLang=selA.value;refreshChips();updateTalkbar();if(running&&!speaking)reStart();};
-$('chipA').onclick=e=>{if(e.target.tagName!=='SELECT'){flushPending();micLang=selA.value;refreshChips();if(running&&!speaking)reStart();}};
-$('chipB').onclick=e=>{if(e.target.tagName!=='SELECT'){flushPending();micLang=selB.value;refreshChips();if(running&&!speaking)reStart();}};
-function reStart(){recStop();setTimeout(()=>{if(running&&!speaking)recStart(byCode(micLang).b);},100);}
+$('clearBtn').onclick=()=>{document.querySelectorAll('.msg').forEach(m=>m.remove());pending='';lastPartial='';log.length=0;interimEl.style.display='none';toast('Đã xóa');};
 
-function updateTalkbar(){
-  $('talkbar').style.display=(!autoMode&&running)?'flex':'none';
-  $('talkA').textContent=byCode(selA.value).n;$('talkB').textContent=byCode(selB.value).n;
-  $('talkA').classList.toggle('on',micLang===selA.value);$('talkB').classList.toggle('on',micLang===selB.value);
+// Đổi mic sang tiếng vừa chọn, khởi động lại nhận dạng
+function switchMic(lang){
+  micLang=lang;refreshChips();updateTalk();
+  if(running&&!speaking){busy=false;listenStop();setTimeout(listenStart,120);}
 }
-$('talkA').onclick=()=>{flushPending();micLang=selA.value;refreshChips();updateTalkbar();if(running&&!speaking)reStart();};
-$('talkB').onclick=()=>{flushPending();micLang=selB.value;refreshChips();updateTalkbar();if(running&&!speaking)reStart();};
-$('modeAuto').onclick=()=>{autoMode=true;$('modeAuto').classList.add('on');$('modeManual').classList.remove('on');updateTalkbar();toast('Tự động: máy dò tiếng người đang nói rồi dịch');};
-$('modeManual').onclick=()=>{autoMode=false;$('modeManual').classList.add('on');$('modeAuto').classList.remove('on');updateTalkbar();toast('Thủ công: nhấn nút ngôn ngữ của người sắp nói');};
+$('swap').onclick=()=>{const t=selA.value;selA.value=selB.value;selB.value=t;switchMic(selA.value);};
+selA.onchange=()=>switchMic(selA.value);
+selB.onchange=()=>{refreshChips();updateTalk();};
+$('chipA').onclick=e=>{if(e.target.tagName!=='SELECT')switchMic(selA.value);};
+$('chipB').onclick=e=>{if(e.target.tagName!=='SELECT')switchMic(selB.value);};
 
-/* ── Độ nhạy + online/offline ── */
-$('sens').oninput=e=>{
-  const v=parseFloat(e.target.value);$('sensVal').textContent=v.toFixed(1);
-  if(HAS_NATIVE)window.Native.setSensitivity(v);
-};
-if(HAS_NATIVE)window.Native.setSensitivity(1.5);
-$('onl').onclick=()=>{$('onl').classList.add('on');$('ofl').classList.remove('on');if(HAS_NATIVE)window.Native.setOffline(false);toast('Nhận dạng Online (cần mạng, chính xác cao)');if(running)reStart();};
-$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(HAS_NATIVE)window.Native.setOffline(true);toast('Offline: cần tải gói NHẬN DẠNG offline trong Cài đặt → Google → Giọng nói → Nhận dạng ngoại tuyến');if(running)reStart();};
+/* Hai nút nói to */
+function updateTalk(){
+  // Hiện ở CẢ hai chế độ khi đang chạy (giúp auto chọn đúng người nói)
+  $('talkbar').style.display=running?'flex':'none';
+  $('talkA').textContent=byCode(selA.value).n;
+  $('talkB').textContent=byCode(selB.value).n;
+  $('talkA').classList.toggle('on',micLang===selA.value);
+  $('talkB').classList.toggle('on',micLang===selB.value);
+}
+$('talkA').onclick=()=>switchMic(selA.value);
+$('talkB').onclick=()=>switchMic(selB.value);
 
-/* ── Lưu file ── */
+$('modeAuto').onclick=()=>{autoMode=true;$('modeAuto').classList.add('on');$('modeManual').classList.remove('on');updateTalk();toast('Tự động: sau mỗi câu tự đổi lượt. Chạm nút nếu máy nghe nhầm tiếng.');};
+$('modeManual').onclick=()=>{autoMode=false;$('modeManual').classList.add('on');$('modeAuto').classList.remove('on');updateTalk();toast('Thủ công: ai nói thì chạm nút tiếng của mình rồi nói.');};
+
+/* Độ nhạy + online/offline */
+$('sens').oninput=e=>{const v=parseFloat(e.target.value);$('sensVal').textContent=v.toFixed(1);if(NATIVE)window.Native.setSensitivity(v);};
+if(NATIVE)window.Native.setSensitivity(1.5);
+$('onl').onclick=()=>{$('onl').classList.add('on');$('ofl').classList.remove('on');if(NATIVE)window.Native.setOffline(false);toast('Online: chính xác cao, cần mạng');if(running)switchMic(micLang);};
+$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(NATIVE)window.Native.setOffline(true);toast('Offline: cần tải gói nhận dạng trong Cài đặt (xem hướng dẫn)');if(running)switchMic(micLang);};
+
+/* Lưu file */
 $('saveBtn').onclick=()=>{
   if(!log.length){toast('Chưa có nội dung');return;}
   let s='NỘI DUNG TRAO ĐỔI – LiveTalk\r\n'+new Date().toLocaleString('vi-VN')+'\r\n'+'='.repeat(36)+'\r\n\r\n';
-  log.forEach(m=>{s+='['+m.t+'] '+(m.side==='A'?'Người A':'Người B')+' ('+m.srcName+'):\r\n  Nói:  '+m.text+'\r\n  Dịch: '+m.trans+'\r\n\r\n';});
+  log.forEach(m=>{s+='['+m.t+'] ('+m.srcName+'):\r\n  Nói:  '+m.text+'\r\n  Dịch: '+m.trans+'\r\n\r\n';});
   const blob=new Blob(['\ufeff'+s],{type:'text/plain;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='LiveTalk_'+Date.now()+'.txt';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='LiveTalk_'+Date.now()+'.txt';a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('Đã lưu file .txt');
 };
 </script>
