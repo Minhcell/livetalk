@@ -164,7 +164,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const HAS_NATIVE = !!(window.Native && window.Native.startListen);
-$('ver').textContent = HAS_NATIVE? 'app v10' : 'web v10';
+$('ver').textContent = HAS_NATIVE? 'app v11' : 'web v11';
 
 let running=false, speaking=false, autoMode=true;
 let micLang='vi';
@@ -208,12 +208,23 @@ function ttsSpeak(text,langBcp){
 }
 
 /* ── Sự kiện từ Native ── */
+let noHearTimer=null;
+function armScan(){
+  clearTimeout(noHearTimer);
+  if(!autoMode||!running)return;
+  // Nếu 4.5s không nghe được gì → người đang nói bằng tiếng KIA → đổi mic quét
+  noHearTimer=setTimeout(()=>{
+    if(!running||speaking||pending||lastInterim)return;
+    const other=(micLang===selA.value)?selB.value:selA.value;
+    if(other!==micLang){micLang=other;refreshChips();reStart();}
+  },4500);
+}
 window.onNative=function(type,data){
-  if(type==='partial'){ heardSinceStart=true;clearTimeout(scanTimer); onPartial(data.text); }
-  else if(type==='final'){ heardSinceStart=true;clearTimeout(scanTimer); onFinal(data.text); }
+  if(type==='partial'){ heardSinceStart=true;clearTimeout(noHearTimer);clearTimeout(scanTimer); onPartial(data.text); }
+  else if(type==='final'){ heardSinceStart=true;clearTimeout(noHearTimer);clearTimeout(scanTimer); onFinal(data.text); }
   else if(type==='ttsend'){ onTtsEnd(); }
   else if(type==='rms'){ const v=Math.max(0,Math.min(100,(data.v/10)*100)); $('micfill').style.width=v+'%'; }
-  else if(type==='listening'){ if(!speaking) setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,'')+' …','on'); }
+  else if(type==='listening'){ if(!speaking){setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,'')+' …','on');armScan();} }
   else if(type==='error'){
     if(data.msg==='perm') toast('Chưa cấp quyền micro — vào Cài đặt bật lại');
     else if(data.msg==='no_recognition') toast('Máy chưa có dịch vụ nhận dạng (cài Google app)');
@@ -276,22 +287,24 @@ async function handleUtterance(text){
   const a=selA.value,b=selB.value;
   try{
     if(autoMode){
-      const home=a;
-      const r0=await gTranslate(text,home);
-      const known=byCode(r0.detected);
-      if(known&&known.c!==home){
-        if(!foreignLangs.includes(known.c))foreignLangs.push(known.c);
-        addBubble('B',text,r0.text,known.c,home);
-        speakOut(r0.text,home);
-        if(micLang!==known.c){micLang=known.c;refreshChips();}
+      // Nhận diện tiếng vừa nói: dịch về A, Google báo tiếng nguồn
+      const probe=await gTranslate(text, a);
+      let srcCode=byCode(probe.detected)?byCode(probe.detected).c:micLang;
+      if(srcCode!==a){
+        // Tiếng nước ngoài → dịch về A + đọc loa A (đã có sẵn probe.text)
+        if(!foreignLangs.includes(srcCode))foreignLangs.push(srcCode);
+        addBubble('B',text,probe.text,srcCode,a);
+        speakOut(probe.text,a);
+        if(micLang!==srcCode){micLang=srcCode;refreshChips();}
       }else{
+        // Tiếng A (của bạn) → dịch ra (các) tiếng đã phát hiện, chưa có thì dùng B
         const targets=foreignLangs.length?foreignLangs:[b];
         const rs=await Promise.all(targets.map(t=>gTranslate(text,t)));
         const parts=targets.map((t,i)=>({lang:t,txt:rs[i].text}));
         const transText=parts.length===1?parts[0].txt:parts.map(p=>byCode(p.lang).n+': '+p.txt).join('\n');
-        addBubble('A',text,transText,home,targets[0]);
+        addBubble('A',text,transText,a,targets[0]);
         speakList(parts);
-        if(micLang!==home){micLang=home;refreshChips();}
+        if(micLang!==a){micLang=a;refreshChips();}
       }
     }else{
       const src=micLang,tl=(micLang===a)?b:a;
@@ -342,7 +355,7 @@ $('micBtn').onclick=()=>{
 };
 function stopAll(){
   running=false;speaking=false;pending='';lastInterim='';
-  clearTimeout(silenceTimer);clearTimeout(interimTimer);clearTimeout(scanTimer);
+  clearTimeout(silenceTimer);clearTimeout(interimTimer);clearTimeout(scanTimer);clearTimeout(noHearTimer);
   recStop();if(HAS_NATIVE)window.Native.stopSpeak();else if('speechSynthesis'in window)speechSynthesis.cancel();
   interimEl.style.display='none';$('micfill').style.width='0';
   $('micBtn').classList.remove('stop');$('micBtn').textContent='🎙';$('micLbl').textContent='Bắt đầu';
@@ -372,7 +385,7 @@ $('sens').oninput=e=>{
 };
 if(HAS_NATIVE)window.Native.setSensitivity(1.5);
 $('onl').onclick=()=>{$('onl').classList.add('on');$('ofl').classList.remove('on');if(HAS_NATIVE)window.Native.setOffline(false);toast('Nhận dạng Online (cần mạng, chính xác cao)');if(running)reStart();};
-$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(HAS_NATIVE)window.Native.setOffline(true);toast('Offline: cần tải gói tiếng trong Cài đặt → Ngôn ngữ & bàn phím');if(running)reStart();};
+$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(HAS_NATIVE)window.Native.setOffline(true);toast('Offline: cần tải gói NHẬN DẠNG offline trong Cài đặt → Google → Giọng nói → Nhận dạng ngoại tuyến');if(running)reStart();};
 
 /* ── Lưu file ── */
 $('saveBtn').onclick=()=>{
