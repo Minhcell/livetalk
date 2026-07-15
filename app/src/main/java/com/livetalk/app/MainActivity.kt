@@ -283,16 +283,24 @@ class MainActivity : AppCompatActivity() {
             // Ngôn ngữ chưa hỗ trợ / thiếu gói → báo rõ, KHÔNG restart liên tục (gây bíp)
             // 12=ERROR_LANGUAGE_NOT_SUPPORTED, 13=ERROR_LANGUAGE_UNAVAILABLE (API31+)
             if (error == 12 || error == 13) {
-                if (preferOffline) { preferOffline = false; emit("offlinefail", null) }
-                else { emit("error", JSONObject().put("msg", "lang").put("lang", currentLang).toString()) }
+                if (preferOffline) {
+                    // Offline mà thiếu gói tiếng này → báo cụ thể + tự chuyển online
+                    preferOffline = false
+                    emit("offlinemiss", JSONObject().put("lang", currentLang).toString())
+                } else {
+                    emit("error", JSONObject().put("msg", "lang").put("lang", currentLang).toString())
+                }
                 recognizer?.destroy(); recognizer = null
-                // thử lại 1 lần sau 600ms (đủ để đổi cờ offline→online), không dồn dập
                 if (wantListen) main.postDelayed({ if (wantListen) beginRecognition() }, 600)
                 return
             }
             if (preferOffline && error == SpeechRecognizer.ERROR_NETWORK) {
+                // Một số máy trả NETWORK khi offline thiếu gói
                 preferOffline = false
-                emit("offlinefail", null)
+                emit("offlinemiss", JSONObject().put("lang", currentLang).toString())
+                recognizer?.destroy(); recognizer = null
+                if (wantListen) main.postDelayed({ if (wantListen) beginRecognition() }, 600)
+                return
             }
             recognizer?.destroy()
             recognizer = null
