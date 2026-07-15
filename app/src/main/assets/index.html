@@ -98,7 +98,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (app v17)</b><br>
+    <b>LiveTalk (app v18)</b><br>
     Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
     <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
     Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
@@ -141,7 +141,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const NATIVE=!!(window.Native&&window.Native.startListen);
-$('ver').textContent=NATIVE?'app v17':'web v17';
+$('ver').textContent=NATIVE?'app v18':'web v18';
 
 /* ═══════════ TRẠNG THÁI ═══════════ */
 let running=false;       // đang bật mic tổng
@@ -218,6 +218,7 @@ window.onNative=function(type,data){
     else if(data.msg==='lang')toast('Chưa cài gói nhận dạng '+(data.lang||'')+' — Cài đặt → Google → Giọng nói → tải gói tiếng này');
   }
   else if(type==='ttsmissing'){ toast('Thiếu giọng đọc '+(data.lang||'')+' — Cài đặt → Ngôn ngữ → Đầu ra giọng nói'); }
+  else if(type==='offlinemiss'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Máy chưa có gói offline cho '+(data.lang||'')+' — đã chuyển Online. Tải gói: Cài đặt→Google→Giọng nói→Nhận dạng ngoại tuyến'); }
   else if(type==='offlinefail'){ $('onl').classList.add('on');$('ofl').classList.remove('on');toast('Offline chưa có gói tiếng — đã tự chuyển Online'); }
   else if(type==='perm'){ if(data.granted&&running)listenStart(); }
 };
@@ -363,7 +364,7 @@ $('modeManual').onclick=()=>{autoMode=false;$('modeManual').classList.add('on');
 $('sens').oninput=e=>{const v=parseFloat(e.target.value);$('sensVal').textContent=v.toFixed(1);if(NATIVE)window.Native.setSensitivity(v);};
 if(NATIVE)window.Native.setSensitivity(1.5);
 $('onl').onclick=()=>{$('onl').classList.add('on');$('ofl').classList.remove('on');if(NATIVE)window.Native.setOffline(false);toast('Online: chính xác cao, cần mạng');if(running)switchMic(micLang);};
-$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(NATIVE)window.Native.setOffline(true);toast('Offline: cần tải gói nhận dạng trong Cài đặt (xem hướng dẫn)');if(running)switchMic(micLang);};
+$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(NATIVE)window.Native.setOffline(true);toast('Đã bật Offline — nói thử, nếu máy chưa có gói tiếng sẽ tự báo');if(running)switchMic(micLang);};
 
 /* Lưu file */
 $('saveBtn').onclick=()=>{
