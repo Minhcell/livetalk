@@ -11,8 +11,8 @@ android {
         applicationId "com.livetalk.app"
         minSdk 24
         targetSdk 34
-        versionCode 10
-        versionName "10.0"
+        versionCode 15
+        versionName "15.0"
     }
 
     buildTypes {
