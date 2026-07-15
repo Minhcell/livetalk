@@ -79,9 +79,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        muteBeep(false)
         recognizer?.destroy()
         tts?.shutdown()
         super.onDestroy()
+    }
+
+    override fun onPause() {
+        muteBeep(false)
+        super.onPause()
     }
 
     // ─────────────────────────── Quyền mic ───────────────────────────
@@ -161,6 +167,8 @@ class MainActivity : AppCompatActivity() {
             emit("error", JSONObject().put("msg", "no_recognition").toString())
             return
         }
+        // TẮT TIẾNG BÍP: mute kênh âm báo hệ thống trong lúc mic khởi động
+        muteBeep(true)
         recognizer = SpeechRecognizer.createSpeechRecognizer(this)
         recognizer?.setRecognitionListener(listener)
 
@@ -196,8 +204,32 @@ class MainActivity : AppCompatActivity() {
         recognizer = null
     }
 
+    private var beepMuted = false
+    private fun muteBeep(mute: Boolean) {
+        try {
+            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            // Tắt/mở tiếng của các kênh phát ra âm bíp khi mic bật
+            val streams = intArrayOf(
+                AudioManager.STREAM_NOTIFICATION,
+                AudioManager.STREAM_SYSTEM,
+                AudioManager.STREAM_RING
+            )
+            if (mute && !beepMuted) {
+                for (s in streams) am.adjustStreamVolume(s, AudioManager.ADJUST_MUTE, 0)
+                beepMuted = true
+            } else if (!mute && beepMuted) {
+                for (s in streams) am.adjustStreamVolume(s, AudioManager.ADJUST_UNMUTE, 0)
+                beepMuted = false
+            }
+        } catch (_: Exception) {}
+    }
+
     private val listener = object : RecognitionListener {
-        override fun onReadyForSpeech(params: Bundle?) { emit("listening", null) }
+        override fun onReadyForSpeech(params: Bundle?) {
+            emit("listening", null)
+            // mic đã bật xong → bỏ mute để loa đọc bình thường (nhưng bíp bật mic đã bị chặn)
+            main.postDelayed({ muteBeep(false) }, 300)
+        }
         override fun onBeginningOfSpeech() { gotAnySpeech = true }
 
         override fun onRmsChanged(rms: Float) {
@@ -247,6 +279,7 @@ class MainActivity : AppCompatActivity() {
     // ─────────────────────────── Đọc loa native ───────────────────────────
     private fun speakNative(text: String, lang: String) {
         if (!ttsReady || text.isBlank()) { emit("ttsend", null); return }
+        muteBeep(false)                          // mở lại âm để loa đọc rõ
         // Nhả mic trước khi đọc (không bíp, không tự nghe lại)
         stopRecognition()
         val loc = localeOf(lang)
