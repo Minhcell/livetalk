@@ -98,7 +98,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (app v16)</b><br>
+    <b>LiveTalk (app v17)</b><br>
     Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
     <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
     Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
@@ -141,7 +141,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const NATIVE=!!(window.Native&&window.Native.startListen);
-$('ver').textContent=NATIVE?'app v16':'web v16';
+$('ver').textContent=NATIVE?'app v17':'web v17';
 
 /* ═══════════ TRẠNG THÁI ═══════════ */
 let running=false;       // đang bật mic tổng
@@ -287,8 +287,7 @@ async function translateAndSpeak(text){
   }catch(e){
     toast('Lỗi dịch: '+(e.message||'thử lại'));
     busy=false;
-    if(autoMode&&running){micLang=(micLang===a)?b:a;refreshChips();updateTalk();}
-    if(running&&!speaking)listenStart();
+    if(running&&!speaking)listenStart();   // không đổi tiếng, chỉ nghe tiếp
   }
 }
 
@@ -311,8 +310,8 @@ function speak(text,langC){
 }
 function ttsEnded(){
   speaking=false;busy=false;
-  // Tự động: sau khi đọc xong, đổi lượt sang tiếng KIA để bắt người kia đáp
-  if(autoMode&&running){micLang=(micLang===selA.value)?selB.value:selA.value;refreshChips();updateTalk();}
+  // KHÔNG tự đổi tiếng nữa — giữ nguyên tiếng người đang nói để họ nói tiếp thoải mái.
+  // Muốn đổi người: chạm nút ngôn ngữ của người kia.
   if(running)listenStart();else setStatus('Sẵn sàng','');
 }
 
