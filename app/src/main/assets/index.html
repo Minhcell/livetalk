@@ -98,7 +98,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (app v14)</b><br>
+    <b>LiveTalk (app v15)</b><br>
     Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
     <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
     Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
@@ -141,7 +141,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const NATIVE=!!(window.Native&&window.Native.startListen);
-$('ver').textContent=NATIVE?'app v14':'web v14';
+$('ver').textContent=NATIVE?'app v15':'web v15';
 
 /* ═══════════ TRẠNG THÁI ═══════════ */
 let running=false;       // đang bật mic tổng
