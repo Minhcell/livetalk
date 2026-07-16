@@ -98,7 +98,7 @@ header{display:flex;align-items:center;gap:8px;padding:12px 14px 6px}
 
 <div id="chat">
   <div id="empty">
-    <b>LiveTalk (app v18)</b><br>
+    <b>LiveTalk (app v19)</b><br>
     Nhấn nút micro để bắt đầu. Hai nút ngôn ngữ hiện ra:<br>
     <b>ai sắp nói thì chạm nút tiếng của mình rồi nói.</b><br>
     Nói xong ngừng lại — máy dịch, hiện phụ đề và đọc loa.<br>
@@ -141,7 +141,7 @@ LANGS.forEach(l=>{selA.add(new Option(l.n,l.c));selB.add(new Option(l.n,l.c));})
 selA.value='vi';selB.value='en';
 
 const NATIVE=!!(window.Native&&window.Native.startListen);
-$('ver').textContent=NATIVE?'app v18':'web v18';
+$('ver').textContent=NATIVE?'app v19':'web v19';
 
 /* ═══════════ TRẠNG THÁI ═══════════ */
 let running=false;       // đang bật mic tổng
@@ -206,9 +206,16 @@ window.onNative=function(type,data){
   if(type==='partial'){ gotPartial(data.text||''); }
   else if(type==='final'){ gotFinal(data.text||''); }
   else if(type==='translated'){ const w=transWaiters[data.id];if(w){delete transWaiters[data.id];w.resolve(data.text||'');} }
-  else if(type==='transfail'){ const w=transWaiters[data.id];if(w){delete transWaiters[data.id];w.reject(new Error(data.msg||'transfail'));} }
-  else if(type==='modelready'){ toast('Đã tải gói dịch offline: '+(data.pair||'')); }
-  else if(type==='modelfail'){ toast('Tải gói dịch offline lỗi: '+(data.pair||'')+' — cần mạng lần đầu'); }
+  else if(type==='transfail'){
+    const w=transWaiters[data.id];
+    if(w){delete transWaiters[data.id];
+      if(data.msg==='need_model')w.reject(new Error('Chưa tải gói dịch offline — bật lại Offline khi có mạng để tải'));
+      else if(data.msg==='lang_unsupported')w.reject(new Error('Cặp tiếng này chưa hỗ trợ dịch offline'));
+      else w.reject(new Error(data.msg||'transfail'));
+    }
+  }
+  else if(type==='modelready'){ toast('✓ Đã tải xong gói dịch offline: '+(data.pair||'')+' — giờ dùng được không cần mạng'); }
+  else if(type==='modelfail'){ toast('✗ Tải gói dịch offline lỗi: '+(data.pair||'')+' — cần mạng để tải lần đầu'); }
   else if(type==='ttsend'){ ttsEnded(); }
   else if(type==='rms'){ $('micfill').style.width=Math.max(0,Math.min(100,((data.v||0)/10)*100))+'%'; }
   else if(type==='listening'){ if(!speaking&&!busy)setStatus('Đang nghe: '+byCode(micLang).n.replace(/^\S+\s/,''),'on'); }
@@ -364,7 +371,18 @@ $('modeManual').onclick=()=>{autoMode=false;$('modeManual').classList.add('on');
 $('sens').oninput=e=>{const v=parseFloat(e.target.value);$('sensVal').textContent=v.toFixed(1);if(NATIVE)window.Native.setSensitivity(v);};
 if(NATIVE)window.Native.setSensitivity(1.5);
 $('onl').onclick=()=>{$('onl').classList.add('on');$('ofl').classList.remove('on');if(NATIVE)window.Native.setOffline(false);toast('Online: chính xác cao, cần mạng');if(running)switchMic(micLang);};
-$('ofl').onclick=()=>{$('ofl').classList.add('on');$('onl').classList.remove('on');if(NATIVE)window.Native.setOffline(true);toast('Đã bật Offline — nói thử, nếu máy chưa có gói tiếng sẽ tự báo');if(running)switchMic(micLang);};
+$('ofl').onclick=()=>{
+  $('ofl').classList.add('on');$('onl').classList.remove('on');
+  if(NATIVE){
+    window.Native.setOffline(true);
+    // Tải sẵn model dịch offline 2 chiều (cần mạng LẦN ĐẦU, sau đó dùng offline mãi)
+    const a=selA.value,b=selB.value;
+    window.Native.preloadModel(a,b);
+    window.Native.preloadModel(b,a);
+    toast('Offline: đang tải gói dịch (cần mạng lần đầu ~30MB/cặp). Tải xong dùng không cần mạng.');
+  }
+  if(running)switchMic(micLang);
+};
 
 /* Lưu file */
 $('saveBtn').onclick=()=>{
