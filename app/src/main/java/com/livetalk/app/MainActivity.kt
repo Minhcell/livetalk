@@ -21,6 +21,11 @@ import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -87,6 +92,8 @@ class MainActivity : AppCompatActivity() {
         muteBeep(false)
         recognizer?.destroy()
         tts?.shutdown()
+        for (t in translators.values) try { t.close() } catch (_: Exception) {}
+        translators.clear()
         super.onDestroy()
     }
 
@@ -146,17 +153,28 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface
         fun setOffline(v: Boolean) { preferOffline = v }
 
-        // Dịch qua HTTP (chạy trong native → KHÔNG bị CORS như fetch trong WebView)
+        // Dịch: offline → ML Kit (model trong máy); online → HTTP Google
         @JavascriptInterface
         fun translate(reqId: String, text: String, srcShort: String, tgtShort: String) {
-            thread {
-                try {
-                    val out = httpTranslate(text, tgtShort)
-                    emit("translated", JSONObject().put("id", reqId).put("text", out).toString())
-                } catch (e: Exception) {
-                    emit("transfail", JSONObject().put("id", reqId).put("msg", e.message ?: "err").toString())
+            if (preferOffline) {
+                mlkitTranslate(reqId, text, srcShort, tgtShort)
+            } else {
+                thread {
+                    try {
+                        val out = httpTranslate(text, tgtShort)
+                        emit("translated", JSONObject().put("id", reqId).put("text", out).toString())
+                    } catch (e: Exception) {
+                        // Online lỗi (mất mạng) → thử ML Kit offline làm phương án dự phòng
+                        mlkitTranslate(reqId, text, srcShort, tgtShort)
+                    }
                 }
             }
+        }
+
+        // Tải trước model offline cho 1 cặp tiếng (gọi khi bật offline, lúc còn mạng)
+        @JavascriptInterface
+        fun preloadModel(srcShort: String, tgtShort: String) {
+            preloadPair(srcShort, tgtShort)
         }
 
         @JavascriptInterface
@@ -184,6 +202,57 @@ class MainActivity : AppCompatActivity() {
             if (!seg.isNull(0)) sb.append(seg.getString(0))
         }
         return sb.toString()
+    }
+
+    // ─────────── Dịch OFFLINE bằng ML Kit ───────────
+    private val translators = HashMap<String, Translator>()
+
+    private fun mlLang(short: String): String? = when (short) {
+        "vi" -> TranslateLanguage.VIETNAMESE
+        "en" -> TranslateLanguage.ENGLISH
+        "zh" -> TranslateLanguage.CHINESE
+        "ja" -> TranslateLanguage.JAPANESE
+        "ko" -> TranslateLanguage.KOREAN
+        "th" -> TranslateLanguage.THAI
+        "fr" -> TranslateLanguage.FRENCH
+        "de" -> TranslateLanguage.GERMAN
+        "ru" -> TranslateLanguage.RUSSIAN
+        "es" -> TranslateLanguage.SPANISH
+        else -> null
+    }
+
+    private fun getTranslator(src: String, tgt: String): Translator? {
+        val s = mlLang(src) ?: return null
+        val t = mlLang(tgt) ?: return null
+        val key = "$s->$t"
+        translators[key]?.let { return it }
+        val opts = TranslatorOptions.Builder().setSourceLanguage(s).setTargetLanguage(t).build()
+        val tr = Translation.getClient(opts)
+        translators[key] = tr
+        return tr
+    }
+
+    private fun mlkitTranslate(reqId: String, text: String, src: String, tgt: String) {
+        val tr = getTranslator(src, tgt)
+        if (tr == null) {
+            emit("transfail", JSONObject().put("id", reqId).put("msg", "lang_unsupported").toString())
+            return
+        }
+        tr.translate(text)
+            .addOnSuccessListener { out ->
+                emit("translated", JSONObject().put("id", reqId).put("text", out).toString())
+            }
+            .addOnFailureListener {
+                emit("transfail", JSONObject().put("id", reqId).put("msg", "need_model").toString())
+            }
+    }
+
+    private fun preloadPair(src: String, tgt: String) {
+        val tr = getTranslator(src, tgt) ?: return
+        val cond = DownloadConditions.Builder().build()
+        tr.downloadModelIfNeeded(cond)
+            .addOnSuccessListener { emit("modelready", JSONObject().put("pair", "$src-$tgt").toString()) }
+            .addOnFailureListener { emit("modelfail", JSONObject().put("pair", "$src-$tgt").toString()) }
     }
 
     // ─────────── Tắt tiếng bíp ───────────
